@@ -1,0 +1,30 @@
+name: Test time and social inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run action with time and social inputs (expect failure - no CTFd running)
+        id: action
+        uses: .
+        with:
+          url: 'http://localhost:9999'
+          time_start: '2024-01-01T00:00:00Z'
+          time_end: '2024-01-02T00:00:00Z'
+          time_freeze: '2024-01-01T23:00:00Z'
+          time_view_after: 'true'
+          social_shares: 'true'
+          social_template: '/path/to/social-template.txt'
+        continue-on-error: true
+      - name: Assert action failed due to no CTFd instance
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when CTFd URL is unreachable, got outcome=$OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when CTFd URL is unreachable with time and social inputs"

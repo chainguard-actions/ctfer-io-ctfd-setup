@@ -1,0 +1,27 @@
+name: Test api_key, file, and dir inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run action with api_key, file, and dir inputs (expect failure - no CTFd running)
+        id: action
+        uses: .
+        with:
+          url: 'http://localhost:9999'
+          api_key: 'ctfd_test_api_key_12345'
+          file: 'ctfd-config.yml'
+          dir: '/workspace/ctf'
+        continue-on-error: true
+      - name: Assert action failed due to no CTFd instance
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when CTFd URL is unreachable, got outcome=$OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when CTFd URL is unreachable with api_key, file, and dir inputs"

@@ -1,0 +1,39 @@
+before:
+  hooks:
+    - go mod tidy
+    - go run cmd/ctfd-setup/main.go schema # build schema.json file
+
+gomod:
+  proxy: true
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: ./cmd/ctfd-setup
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    goos:
+      - linux
+    goarch:
+      - amd64
+    binary: "{{ .ProjectName }}"
+    flags:
+      - -cover
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+source:
+  enabled: true
+
+checksum: {}
+
+sboms:
+  - artifacts: source
+
+release:
+  extra_files:
+    - glob: schema.json

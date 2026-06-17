@@ -1,0 +1,34 @@
+name: Test legal, security, and miscellaneous inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run action with legal, security, and misc inputs (expect failure - no CTFd running)
+        id: action
+        uses: .
+        with:
+          url: 'http://localhost:9999'
+          legal_privacy_policy_content: 'We respect your privacy.'
+          legal_privacy_policy_url: 'https://example.com/privacy'
+          legal_tos_content: 'By participating you agree to these terms.'
+          legal_tos_url: 'https://example.com/tos'
+          security_html_sanitization: 'true'
+          security_registration_code: 'secret-reg-code-123'
+          settings_paused: 'false'
+          major_league_cyber_client_id: 'mlc-client-id-abc'
+          major_league_cyber_client_secret: 'mlc-client-secret-xyz'
+          pages_robots_txt: 'User-agent: *\nDisallow: /'
+        continue-on-error: true
+      - name: Assert action failed due to no CTFd instance
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when CTFd URL is unreachable, got outcome=$OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when CTFd URL is unreachable with legal, security, and misc inputs"
