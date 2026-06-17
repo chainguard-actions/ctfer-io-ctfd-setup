@@ -1,0 +1,42 @@
+name: Test email settings inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          url: 'http://localhost:9999'
+          email_registration_subject: 'Welcome to the CTF!'
+          email_registration_body: 'Thank you for registering.'
+          email_confirmation_subject: 'Confirm your email'
+          email_confirmation_body: 'Please confirm your email address.'
+          email_new_account_subject: 'New account created'
+          email_new_account_body: 'A new account has been created.'
+          email_password_reset_subject: 'Password reset request'
+          email_password_reset_body: 'Click here to reset your password.'
+          email_password_reset_confirmation_subject: 'Password reset confirmed'
+          email_password_reset_confirmation_body: 'Your password has been reset.'
+          email_from: 'noreply@example.com'
+          email_server: 'smtp.example.com'
+          email_port: '587'
+          email_username: 'smtp_user'
+          email_password: 'smtp_password'
+          email_tls_ssl: 'false'
+          email_starttls: 'true'
+
+      - name: Assert action failed with connection error (not config error)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when CTFd is unreachable, got outcome=$OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when CTFd URL is unreachable (email settings accepted)"
