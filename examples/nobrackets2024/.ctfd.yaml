@@ -1,0 +1,68 @@
+appearance:
+  name: "NoBracketsCTF 2024 - Finale"
+  description: ""
+
+theme:
+  logo:
+    from_file: logo.png
+  small_icon:
+    from_file: tab-icon.png
+  name: core-beta
+  header:
+    from_file: theme-header.html
+
+settings:
+  challenge_visibility: public
+  account_visibility: public
+  score_visibility: private
+  registration_visibility: public
+
+accounts:
+  # Team creation was set to false in production as teams where created ahead of the event,
+  # thanks to a qualification round.
+  team_creation: true
+
+# Don't set time, not very usefull in replicability
+
+legal:
+  tos:
+    content:
+      from_file: tos.md
+
+mode: teams
+
+admin:
+  name: 'ctfer'
+  email: 'ctfer@protonmail.com'
+  password: 'ctfer'
+
+pages:
+  additional:
+    - title: NoBracketsCTF 2024 - Finale
+      route: index
+      format: markdown
+      content:
+        from_file: index.html
+
+uploads:
+  - file:
+      from_file: images/nbc.png
+    location: images/nbc.png
+  - file:
+      from_file: images/pec-white.png
+    location: images/pec-white.png
+  - file:
+      from_file: images/pec.png
+    location: images/pec.png
+  - file:
+      from_file: images/rm-pro-white.svg
+    location: images/rm-pro-white.svg
+  - file:
+      from_file: images/rm-pro.svg
+    location: images/rm-pro.svg
+  - file:
+      from_file: images/synacktiv-white.png
+    location: images/synacktiv-white.png
+  - file:
+      from_file: images/synacktiv.png
+    location: images/synacktiv.png

@@ -1,0 +1,8 @@
+appearance:
+  name: 'MyCTF 20XX'
+  description: 'MyCTF description'
+
+admin:
+  name: 'ctfer'
+  email: 'ctfer-io@protonmail.com'
+  password: 'ctfer'
