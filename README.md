@@ -1,16 +1,164 @@
-# ctfer-io/ctfd-setup
+<div align="center">
+  <h1>CTFd-Setup</h1>
+  <p><b>Version your CTFd setup configuration.</b><p>
+  <a href="https://pkg.go.dev/github.com/ctfer-io/ctfd-setup"><img src="https://shields.io/badge/-reference-blue?logo=go&style=for-the-badge" alt="reference"></a>
+  <a href=""><img src="https://img.shields.io/github/license/ctfer-io/ctfd-setup?style=for-the-badge" alt="License"></a>
+  <a href="https://coveralls.io/github/ctfer-io/ctfd-setup?branch=main"><img src="https://img.shields.io/coverallsCoverage/github/ctfer-io/ctfd-setup?style=for-the-badge" alt="Coverage Status"></a>
+	<br>
+	<a href="https://github.com/ctfer-io/ctfd-setup/actions/workflows/codeql-analysis.yaml"><img src="https://img.shields.io/github/actions/workflow/status/ctfer-io/ctfd-setup/codeql-analysis.yaml?style=for-the-badge&label=CodeQL" alt="CodeQL"></a>
+  <a href="https://securityscorecards.dev/viewer/?uri=github.com/ctfer-io/ctfd-setup"><img src="https://img.shields.io/ossf-scorecard/github.com/ctfer-io/ctfd-setup?label=openssf%20scorecard&style=for-the-badge" alt="OpenSSF Scoreboard"></a>
+  <img src="https://img.shields.io/badge/slsa-level%203-green?style=for-the-badge" alt="SLSA Level 3">
+</div>
 
-Setup a CTFd from a versionned configuration file.
+CTFd does not have the concept of **configuration file**, leading to **deployment complications** and the **impossibility to version configurations**.
+This is problematic for reproducibility or sharing configuration for debugging or replicating a CTF infrastructure.
 
-Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/ctfer-io/ctfd-setup](https://github.com/ctfer-io/ctfd-setup).
+Moreover, the setup API does not exist, so we had to map it to what the frontend calls in [go-ctfd](https://github.com/ctfer-io/go-ctfd/blob/main/api/setup.go).
 
-## Versions
+To fill those gaps, we built `ctfd-setup` on top of the CTFd API. This utility helps setup a CTFd instance from a YAML configuration file, CLI flags and environment variables.
+Thanks to this, you can integrate it using **GitHub Actions**, **Drone CI** or even as part of your **IaC provisionning**.
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v1.8.3 | [`v1.8.3`](https://github.com/chainguard-actions/ctfer-io-ctfd-setup/tree/v1.8.3) | [`38a7062`](https://github.com/ctfer-io/ctfd-setup/commit/38a7062e9ca6fdac182bfcb258113c5624c6c1d8) |
-| v1.8.4 | [`v1.8.4`](https://github.com/chainguard-actions/ctfer-io-ctfd-setup/tree/v1.8.4) | [`bed8502`](https://github.com/ctfer-io/ctfd-setup/commit/bed8502990c8db02b4bddadc765260a7ddaad5cc) |
-| v1.8.6 | [`v1.8.6`](https://github.com/chainguard-actions/ctfer-io-ctfd-setup/tree/v1.8.6) | [`b0dc7dd`](https://github.com/ctfer-io/ctfd-setup/commit/b0dc7dde2d126b98441bc70848c1d62a9b30b648) |
+With `ctfd-setup` you can **setup your CTFd in a second**.
+
+## How to use
+
+<div align="center">
+    <img src="res/how-to-use.excalidraw.png" alt="ctfd-setup utility used in GitHub Actions, Drone CI and Docker and Kubernetes initial container" width="800px">
+</div>
+
+### YAML
+
+You can use `ctfd-setup` as a CLI tool and provision it a YAML configuration file.
+
+```yaml
+appearance:
+  name: 'My CTF'
+  description: 'My CTF description'
+
+admin:
+  name: 'admin'
+  email: 'admin@super.ctf'
+  password: 'admin_password'
+
+mode: users
+```
+
+**We encourage you to version this file** such that re-deployment is easy (e.g., for test purposes, or in case of a catastrophic failure of the infra during the event).
+Nevertheless, please do not commit the admin credentials ! Use `from_env` objects instead (refer to [the YAML Schema](#schema) for more info) or use [CLI overrides](examples/cli-override/).
+
+It could also deploy custom pages (like the index) as follows.
+This feature is not available in CLI, [GitHub Actions](#github-actions) and [Drone CI](#drone-ci).
+
+```yaml
+# ... other configuration attributes
+
+pages:
+  additional:
+    - title: CTFer.io example index
+      route: index
+      format: markdown
+      content: |
+        <div>
+          <p>Some index page content</p>
+        </div>
+```
+
+For further configuration, please refer to the binary's specific API through `ctfd-setup --help`.
+
+### GitHub Actions
+
+To improve our own workflows and share knownledges and tooling, we built a GitHub Action: `ctfer-io/ctfd-setup`.
+You can use it given the following example.
+
+```yaml
+name: 'My workflow'
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  my-job:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Setup CTFd'
+        uses: 'ctfer-io/ctfd-setup@v1.8.1'
+        with:
+          url: ${{ secrets.CTFD_URL }}
+          file: '.ctfd.yaml'
+          # or directly attributes
+          appearance_name: 'My CTF'
+          appearance_description: 'My CTF description'
+          admin_name: ${{ secrets.ADMIN_USERNAME }}
+          admin_email: ${{ secrets.ADMIN_EMAIL }}
+          admin_password: ${{ secrets.ADMIN_PASSWORD }}
+          # ... and so on (non-mandatory attributes)
+```
+
+### Drone CI
+
+This could also be used as part of a Drone CI use `ctferio/ctfd-setup`.
+
+```yaml
+kind: pipeline
+type: docker
+name: 'My pipeline'
+
+trigger:
+  branch:
+  - main
+  event:
+  - push
+
+steps:
+  # ...
+
+  - name: 'Setup CTFd'
+    image: 'ctferio/ctfd-setup@v1.8.1'
+    settings:
+      url:
+        from_secret: CTFD_URL
+      file: '.ctfd.yaml'
+      # or directly attributes
+      appearance_name: 'My CTF'
+      appearance_description: 'My CTF description'
+      admin_name:
+        from_secret: ADMIN_USERNAME
+      admin_email:
+        from_secret: ADMIN_EMAIL
+      admin_password:
+        from_secret: ADMIN_PASSWORD
+      # ... and so on (non-mandatory attributes)
+```
+
+## Schema
+
+For ease of use, you can generate and use the YAML schema using `ctfd-setup schema`.
+
+### In file
+
+**(Optional)** In your `.ctfd.yaml` file you could then prepend `# yaml-language-server: $schema=file:///path/to/schema.json`.
+
+<div align="center">
+  <img src="res/schema.png">
+</div>
+
+> [!NOTE]
+> This will appear by default if your IDE has a YAML extension with support of the [JSON SchemaStore](https://www.schemastore.org/json/).
+
+### In VSCode
+
+In case you are working in an air-gapped environment or working on improving the project, you may want your schema to automatically target your configuration files.
+
+To do so, add the following to your `.vscode/settings.json`.
+```json
+{
+    "yaml.schemas": {
+        "schema.json": ".ctfd.yaml"
+    }
+}
+```
 
 ## Privacy
 

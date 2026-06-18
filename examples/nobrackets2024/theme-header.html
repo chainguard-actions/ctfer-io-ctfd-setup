@@ -1,0 +1,80 @@
+<style id="theme-color">
+  /* Logos on the main page */
+  [data-bs-theme="light"] .theme-dark {
+    display: none !important;
+  }
+
+  [data-bs-theme="light"] .theme-light {
+    display: block !important;
+  }
+
+  [data-bs-theme="dark"] .theme-dark {
+    display: block !important;
+  }
+
+  [data-bs-theme="dark"] .theme-light {
+    display: none !important;
+  }
+
+  /* Button on the main page */
+  h1 .btn {
+    padding: 20px !important;
+    /* Invert background and color to highlight */
+    color: var(--bs-body-bg);
+    background-color: var(--bs-btn-color) !important;
+    border-radius: 5px !important;
+    font-size: 20px !important;
+
+    &:hover {
+      background-color: #48808a !important;
+    }
+  }
+
+  /* Challenge difficulty */
+  button.tag-Introduction {
+    border: 5px solid #cad3f5 !important;
+    border-radius: 5px;
+  }
+
+  button.tag-Facile {
+    border: 5px solid #a6da95 !important;
+    border-radius: 5px;
+  }
+
+  button.tag-Moyen {
+    border: 5px solid #eed49f !important;
+    border-radius: 5px;
+  }
+
+  button.tag-Difficile {
+    border: 5px solid #ed8796 !important;
+    border-radius: 5px;
+  }
+
+  button.tag-D\u00e9mon {
+    border: 5px solid #c6a0f6 !important;
+    border-radius: 5px;
+  }
+
+  /* Customize challenge display */
+  .challenge-button {
+    box-shadow: 3px 3px 3px grey;
+
+    p {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      background-color: var(--bs-body-color);
+    }
+
+    .challenge-solved {
+      background-color: #a6da95 !important;
+      border: 5px solid;
+      border-color: #a6da95;
+      border-radius: 5px;
+    }
+  }
+</style>
