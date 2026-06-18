@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v1.8.2 | [`v1.8.2`](https://github.com/chainguard-actions/ctfer-io-ctfd-setup/tree/v1.8.2) | [`147d6b3`](https://github.com/ctfer-io/ctfd-setup/commit/147d6b302fa53667d6a441ce730b80850e3733af) |
 | v1.8.3 | [`v1.8.3`](https://github.com/chainguard-actions/ctfer-io-ctfd-setup/tree/v1.8.3) | [`38a7062`](https://github.com/ctfer-io/ctfd-setup/commit/38a7062e9ca6fdac182bfcb258113c5624c6c1d8) |
 | v1.8.4 | [`v1.8.4`](https://github.com/chainguard-actions/ctfer-io-ctfd-setup/tree/v1.8.4) | [`bed8502`](https://github.com/ctfer-io/ctfd-setup/commit/bed8502990c8db02b4bddadc765260a7ddaad5cc) |
 | v1.8.6 | [`v1.8.6`](https://github.com/chainguard-actions/ctfer-io-ctfd-setup/tree/v1.8.6) | [`b0dc7dd`](https://github.com/ctfer-io/ctfd-setup/commit/b0dc7dde2d126b98441bc70848c1d62a9b30b648) |
