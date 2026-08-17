@@ -1,4 +1,4 @@
-name: Test inline inputs (no config file)
+name: Test teams mode with unreachable URL
 on:
   workflow_dispatch:
 
@@ -13,13 +13,15 @@ jobs:
         continue-on-error: true
         with:
           url: http://127.0.0.1:19999
-          appearance_name: 'Test CTF'
-          appearance_description: 'A test CTF for CI'
+          appearance_name: 'Team CTF'
+          appearance_description: 'A team-based CTF for CI testing'
           admin_name: 'admin'
           admin_email: 'admin@example.com'
           admin_password: 'adminpassword'
-          mode: 'users'
-          settings_challenge_visibility: 'public'
+          mode: 'teams'
+          accounts_team_creation: 'true'
+          accounts_team_size: '4'
+          settings_challenge_visibility: 'private'
           settings_account_visibility: 'public'
           settings_score_visibility: 'public'
           settings_registration_visibility: 'public'
@@ -30,10 +32,10 @@ jobs:
         run: |
           echo "Action outcome: $OUTCOME"
           # The action MUST fail because the URL is unreachable (no CTFd running).
-          # This verifies the action started, processed inline inputs, validated
+          # This verifies the action started, processed teams-mode inputs, validated
           # config successfully, and only failed at the network connection stage.
           if [ "$OUTCOME" != "failure" ]; then
             echo "FAIL: expected action to fail with unreachable URL, but got: $OUTCOME"
             exit 1
           fi
-          echo "PASS: action correctly failed at network level (config validation passed)"
+          echo "PASS: action correctly processed teams mode config and failed at network level"

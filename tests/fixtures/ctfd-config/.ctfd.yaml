@@ -1,0 +1,16 @@
+appearance:
+  name: 'Test CTF 2024'
+  description: 'A test CTF for CI/CD pipeline testing'
+
+admin:
+  name: 'admin'
+  email: 'admin@example.com'
+  password: 'adminpassword123'
+
+mode: 'users'
+
+settings:
+  challenge_visibility: 'public'
+  account_visibility: 'public'
+  score_visibility: 'public'
+  registration_visibility: 'public'
