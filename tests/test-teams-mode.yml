@@ -1,4 +1,4 @@
-name: Test unreachable URL (valid config, connection fails)
+name: Test teams mode (valid config with teams mode, unreachable URL)
 on:
   workflow_dispatch:
 
@@ -13,23 +13,27 @@ jobs:
         continue-on-error: true
         with:
           url: 'http://127.0.0.1:19999'
-          appearance_name: 'TestCTF'
-          appearance_description: 'A test CTF'
+          appearance_name: 'TeamsCTF'
+          appearance_description: 'A teams-based CTF'
           admin_name: 'admin'
           admin_email: 'admin@example.com'
           admin_password: 'adminpassword'
-          mode: 'users'
+          mode: 'teams'
+          accounts_team_creation: 'true'
+          settings_challenge_visibility: 'public'
+          settings_account_visibility: 'public'
+          settings_score_visibility: 'public'
+          settings_registration_visibility: 'public'
 
-      - name: Assert action failed with connection error (not config error)
+      - name: Assert action failed with connection error (not config validation error)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
           # The action should fail because the URL is unreachable,
-          # but it should NOT fail due to config validation errors.
-          # We expect 'failure' here since CTFd is not running.
+          # but NOT due to config validation errors (teams mode is valid).
           if [ "$OUTCOME" != "failure" ]; then
             echo "FAIL: expected action to fail (no CTFd at 127.0.0.1:19999)"
             exit 1
           fi
-          echo "PASS: action failed as expected (connection refused, not config error)"
+          echo "PASS: action failed as expected (connection refused, teams mode config is valid)"

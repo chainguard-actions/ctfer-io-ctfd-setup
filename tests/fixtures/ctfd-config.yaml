@@ -1,0 +1,8 @@
+appearance:
+  name: 'FileCTF 2024'
+  description: 'A CTF loaded from a config file'
+admin:
+  name: 'fileadmin'
+  email: 'fileadmin@example.com'
+  password: 'filepassword123'
+mode: 'users'

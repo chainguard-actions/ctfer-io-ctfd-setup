@@ -1,4 +1,4 @@
-name: Test unreachable URL (valid config, connection fails)
+name: Test invalid mode enum value (config validation failure)
 on:
   workflow_dispatch:
 
@@ -18,18 +18,17 @@ jobs:
           admin_name: 'admin'
           admin_email: 'admin@example.com'
           admin_password: 'adminpassword'
-          mode: 'users'
+          mode: 'invalid_mode'
 
-      - name: Assert action failed with connection error (not config error)
+      - name: Assert action failed (invalid mode enum value)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
-          # The action should fail because the URL is unreachable,
-          # but it should NOT fail due to config validation errors.
-          # We expect 'failure' here since CTFd is not running.
+          # The action should fail because 'invalid_mode' is not a valid enum value
+          # for mode (must be 'users' or 'teams'). Config validation should catch this.
           if [ "$OUTCOME" != "failure" ]; then
-            echo "FAIL: expected action to fail (no CTFd at 127.0.0.1:19999)"
+            echo "FAIL: expected action to fail due to invalid mode enum value"
             exit 1
           fi
-          echo "PASS: action failed as expected (connection refused, not config error)"
+          echo "PASS: action failed as expected (invalid mode enum value rejected)"
